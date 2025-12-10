@@ -79,7 +79,6 @@ const CharacterChatApp = () => {
     setGeneratedCodesList([...generatedCodesList, { code, ...generatedCodesStore[code] }]);
     navigator.clipboard.writeText(code);
     
-    // 관리자는 자동으로 테스트 채팅방 생성
     const testRoom = {
       roomId: `room_${Date.now()}`,
       activationCode: code,
@@ -203,14 +202,12 @@ const CharacterChatApp = () => {
     setInputMessage('');
     setIsLoading(true);
 
-    // 사용자 메시지 추가
     const newUserMessage = { 
       role: 'user', 
       content: userMsg, 
       timestamp: new Date().toISOString() 
     };
 
-    // chatRooms 먼저 업데이트
     const updatedRooms = chatRooms.map(room => {
       if (room.roomId === currentRoom.roomId) {
         return {
@@ -222,7 +219,6 @@ const CharacterChatApp = () => {
     });
     setChatRooms(updatedRooms);
 
-    // currentRoom 업데이트
     const roomWithUserMsg = {
       ...currentRoom,
       messages: [...currentRoom.messages, newUserMessage]
@@ -255,7 +251,6 @@ const CharacterChatApp = () => {
       const data = await response.json();
       const aiMsg = data.candidates[0].content.parts[0].text;
 
-      // AI 메시지 추가
       const newAiMessage = { 
         role: 'model', 
         content: aiMsg, 
@@ -310,7 +305,7 @@ const CharacterChatApp = () => {
 
   const deleteRoom = (roomId, e) => {
     e.stopPropagation();
-    if (confirm('삭제하시겠습니까?')) {
+    if (window.confirm('삭제하시겠습니까?')) {
       setChatRooms(chatRooms.filter(room => room.roomId !== roomId));
       if (currentRoom?.roomId === roomId) {
         setCurrentRoom(null);
@@ -553,12 +548,6 @@ const CharacterChatApp = () => {
               >
                 로그인
               </button>
-
-              <div className="pt-4 border-t">
-                <p className="text-xs text-gray-500 text-center">
-                  관리자 키: <code className="bg-gray-100 px-2 py-1 rounded">AIzaSyAdminKey...</code>
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -603,7 +592,6 @@ const CharacterChatApp = () => {
               <button 
                 onClick={() => setShowAdminPanel(false)} 
                 className="text-gray-400 hover:text-gray-600 text-3xl font-light leading-none"
-                title="닫기"
               >
                 ×
               </button>
@@ -689,55 +677,53 @@ const CharacterChatApp = () => {
                       className="w-full px-4 py-3 border rounded-lg"
                     />
                   </div>
+<button
+                onClick={generateCode}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold"
+              >
+                코드 생성
+              </button>
+            </div>
 
-                  <button
-                    onClick={generateCode}
-                    className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-bold"
-                  >
-                    코드 생성
-                  </button>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-bold mb-4">생성된 코드</h3>
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {generatedCodesList.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">코드 없음</p>
-                    ) : (
-                      generatedCodesList.map((item, idx) => (
-                        <div key={idx} className={`p-4 rounded-lg border-l-4 ${item.used ? 'bg-gray-50 border-gray-400' : 'bg-green-50 border-green-500'}`}>
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="font-bold">{item.characterName}</p>
-                              <p className="text-sm font-mono">{item.code}</p>
-                            </div>
-                            <div className="flex gap-2">
-                              <span className={`px-3 py-1 rounded-full text-xs ${item.used ? 'bg-gray-200' : 'bg-green-200'}`}>
-                                {item.used ? '사용됨' : '미사용'}
-                              </span>
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(item.code);
-                                  alert('복사!');
-                                }}
-                                className="p-2 hover:bg-gray-200 rounded-lg"
-                              >
-                                <Copy className="w-4 h-4" />
-                              </button>
-                            </div>
-                          </div>
+            <div>
+              <h3 className="text-xl font-bold mb-4">생성된 코드</h3>
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {generatedCodesList.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">코드 없음</p>
+                ) : (
+                  generatedCodesList.map((item, idx) => (
+                    <div key={idx} className={`p-4 rounded-lg border-l-4 ${item.used ? 'bg-gray-50 border-gray-400' : 'bg-green-50 border-green-500'}`}>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-bold">{item.characterName}</p>
+                          <p className="text-sm font-mono">{item.code}</p>
                         </div>
-                      ))
-                    )}
-                  </div>
-                </div>
+                        <div className="flex gap-2">
+                          <span className={`px-3 py-1 rounded-full text-xs ${item.used ? 'bg-gray-200' : 'bg-green-200'}`}>
+                            {item.used ? '사용됨' : '미사용'}
+                          </span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(item.code);
+                              alert('복사!');
+                            }}
+                            className="p-2 hover:bg-gray-200 rounded-lg"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  )}
 
-      {/* 코드 생성 완료 토스트 */}
       {showSuccessToast && (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in">
           <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
