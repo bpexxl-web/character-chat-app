@@ -17,16 +17,3 @@
     "development": ["last 1 chrome version"]
   }
 }
-```
-
-**"Commit new file"** 클릭
-
----
-
-## 📄 2. public/index.html
-
-**"Add file" → "Create new file"**
-
-### 파일 이름:
-```
-public/index.html
